@@ -1,0 +1,60 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# CANOPY V2 - Math Utils - Traduction Française
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Interface principale
+MATH_UTILS_TITLE = "CANOPY Math Utils"
+MATH_UTILS_HELP = "Aide Math Utils"
+
+# Champs de saisie
+EXPRESSION = "Expression"
+EXPRESSION_PLACEHOLDER = "Tapez votre expression mathématique"
+RESULT = "Résultat"
+
+# Messages
+MSG_EMPTY_EXPRESSION = "Expression vide"
+MSG_INVALID_CHARS = "Caractères non autorisés détectés"
+MSG_UNBALANCED_PARENS = "Parenthèses non équilibrées"
+MSG_UNKNOWN_IDENTIFIER = "Identifiant inconnu"
+MSG_DIVISION_ZERO = "Division par zéro"
+MSG_RESULT_NAN = "Résultat: NaN (Not a Number)"
+MSG_RESULT_INF = "Résultat: Infini"
+MSG_COPIED = "Copié dans le presse-papier!"
+MSG_VALUE_APPLIED = "Valeur appliquée"
+
+# Instructions
+INSTRUCTION_ENTER_CALC = "[Entrée] → Calculer"
+INSTRUCTION_ENTER_VALIDATE = "[Entrée] → Valider et copier"
+INSTRUCTION_ESCAPE = "[Échap] → Annuler"
+
+# Aide rapide
+HELP_QUICK = "Aide rapide"
+HELP_OPERATORS = "Opérateurs: + - * / ** ()"
+HELP_CONSTANTS = "Constantes: pi, e, tau"
+HELP_FUNCTIONS = "Fonctions: sin(), cos(), sqrt(), abs()..."
+
+# Sections d'aide détaillée
+HELP_SECTION_OPERATORS = "OPÉRATEURS"
+HELP_SECTION_CONSTANTS = "CONSTANTES"
+HELP_SECTION_TRIG = "TRIGONOMÉTRIE (radians)"
+HELP_SECTION_MATH = "MATHÉMATIQUES"
+HELP_SECTION_EXAMPLES = "EXEMPLES"
+
+# Descriptions des opérateurs
+HELP_ADD = "Addition"
+HELP_SUB = "Soustraction"
+HELP_MUL = "Multiplication"
+HELP_DIV = "Division"
+HELP_POW = "Puissance"
+HELP_PARENS = "Parenthèses"
+
+# Descriptions des fonctions
+HELP_SQRT = "Racine carrée"
+HELP_ABS = "Valeur absolue"
+HELP_LOG = "Logarithme naturel"
+HELP_LOG10 = "Logarithme base 10"
+HELP_FLOOR = "Arrondi inférieur"
+HELP_CEIL = "Arrondi supérieur"
+HELP_ROUND = "Arrondi standard"
+HELP_MIN = "Minimum"
+HELP_MAX = "Maximum"
