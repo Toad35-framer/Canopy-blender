@@ -44,9 +44,9 @@ from . import core
 
 # Modules implémentés
 from . import math_utils
+from . import snap_circle
 
 # Modules à venir (décommenter au fur et à mesure)
-# from . import snap_circle
 # from . import plan_manager
 # from . import rec
 # from . import cut_souder
@@ -68,7 +68,7 @@ from . import math_utils
 modules = [
     core,
     math_utils,
-    # snap_circle,         # 🔄 Migration en cours
+    snap_circle,           # ✅ Migré
     # plan_manager,        # 🔄 Migration en cours
     # rec,                 # 🔄 Migration en cours
     # cut_souder,          # 🔄 Migration en cours
@@ -113,8 +113,9 @@ def register():
         print(f"  ❌ {error_count} erreur(s)")
     print("")
     print("  📌 Raccourcis:")
-    print("     • Ctrl+M     : Math Utils (calculatrice)")
-    print("     • N          : Panneau latéral CANOPY")
+    print("     • Ctrl+M       : Math Utils (calculatrice)")
+    print("     • Ctrl+Shift+S : Menu radial Snap Circle")
+    print("     • N            : Panneau latéral CANOPY")
     print("")
     print("═" * 60)
     print("")
