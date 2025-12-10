@@ -14,20 +14,103 @@
 #   - Cliquer sur des éléments pour placer les cercles
 #   - Ctrl+Shift+S pour le menu radial
 #
+# CONVENTION DE NOMMAGE:
+#   Tous les fichiers (sauf __init__.py) suivent le format: module-fichier.py
+#   Exemple: snap_circle-core.py, snap_circle-renderer.py
+#
 # ══════════════════════════════════════════════════════════════════════════════
 
 import bpy
+import importlib
+import importlib.util
+import sys
+from pathlib import Path
 
-# Imports des sous-modules
-from . import core
-from . import renderer
-from . import operators
-from . import movement
-from . import rotation
-from . import ui_panel
-from . import ui_pie_menus
-from . import properties
-from . import keymap
+__version__ = "2.0.0"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SYSTÈME D'IMPORT POUR FICHIERS AVEC TIRETS
+# ══════════════════════════════════════════════════════════════════════════════
+
+def import_submodule(module_name: str, file_name: str):
+    """
+    Importe un sous-module depuis un fichier avec tiret dans le nom.
+    
+    Args:
+        module_name: Nom du module parent (ex: 'canopy.snap_circle')
+        file_name: Nom du fichier sans extension (ex: 'snap_circle-core')
+    
+    Returns:
+        Le module importé
+    """
+    # Construire le chemin complet du module
+    full_module_name = f"{module_name}.{file_name.replace('-', '_')}"
+    
+    # Si déjà importé, recharger
+    if full_module_name in sys.modules:
+        return importlib.reload(sys.modules[full_module_name])
+    
+    # Trouver le chemin du fichier
+    current_dir = Path(__file__).parent
+    file_path = current_dir / f"{file_name}.py"
+    
+    if not file_path.exists():
+        raise ImportError(f"Fichier non trouvé: {file_path}")
+    
+    # Charger le module depuis le fichier
+    spec = importlib.util.spec_from_file_location(full_module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[full_module_name] = module
+    spec.loader.exec_module(module)
+    
+    return module
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# IMPORT DES SOUS-MODULES
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Nom du module courant
+_MODULE_NAME = __name__
+
+# Liste des sous-modules à importer (ordre important)
+_SUBMODULES = [
+    'snap_circle-core',
+    'snap_circle-renderer',
+    'snap_circle-properties',
+    'snap_circle-operators',
+    'snap_circle-movement',
+    'snap_circle-rotation',
+    'snap_circle-ui_panel',
+    'snap_circle-ui_pie_menus',
+    'snap_circle-keymap',
+]
+
+# Dictionnaire pour stocker les modules importés
+_loaded_modules = {}
+
+def _load_all_submodules():
+    """Charge tous les sous-modules"""
+    global _loaded_modules
+    for submodule_name in _SUBMODULES:
+        try:
+            _loaded_modules[submodule_name] = import_submodule(_MODULE_NAME, submodule_name)
+        except Exception as e:
+            print(f"[CANOPY Snap Circle] Erreur import {submodule_name}: {e}")
+
+# Charger les modules au premier import
+_load_all_submodules()
+
+# Aliases pour accès facile
+core = _loaded_modules.get('snap_circle-core')
+renderer = _loaded_modules.get('snap_circle-renderer')
+properties = _loaded_modules.get('snap_circle-properties')
+operators = _loaded_modules.get('snap_circle-operators')
+movement = _loaded_modules.get('snap_circle-movement')
+rotation = _loaded_modules.get('snap_circle-rotation')
+ui_panel = _loaded_modules.get('snap_circle-ui_panel')
+ui_pie_menus = _loaded_modules.get('snap_circle-ui_pie_menus')
+keymap = _loaded_modules.get('snap_circle-keymap')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -35,19 +118,17 @@ from . import keymap
 # ══════════════════════════════════════════════════════════════════════════════
 
 # Core
-from .core import (
-    ElementDetector,
-    HistoryManager,
-    get_element_info,
-    get_edge_direction_from_position,
-)
+if core:
+    ElementDetector = core.ElementDetector
+    HistoryManager = core.HistoryManager
+    get_element_info = core.get_element_info
+    get_edge_direction_from_position = core.get_edge_direction_from_position
 
 # Renderer
-from .renderer import (
-    CircleRenderer,
-    register_draw_handler,
-    unregister_draw_handler,
-)
+if renderer:
+    CircleRenderer = renderer.CircleRenderer
+    register_draw_handler = renderer.register_draw_handler
+    unregister_draw_handler = renderer.unregister_draw_handler
 
 __all__ = [
     'ElementDetector',
@@ -57,8 +138,6 @@ __all__ = [
     'register_draw_handler',
     'unregister_draw_handler',
 ]
-
-__version__ = "2.0.0"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -70,27 +149,34 @@ def register():
     print("[CANOPY] Snap Circle: Enregistrement...")
     
     # Propriétés
-    properties.register_properties()
+    if properties:
+        properties.register_properties()
     
     # Opérateurs
-    for cls in operators.classes:
-        bpy.utils.register_class(cls)
+    if operators:
+        for cls in operators.classes:
+            bpy.utils.register_class(cls)
     
-    for cls in movement.classes:
-        bpy.utils.register_class(cls)
+    if movement:
+        for cls in movement.classes:
+            bpy.utils.register_class(cls)
     
-    for cls in rotation.classes:
-        bpy.utils.register_class(cls)
+    if rotation:
+        for cls in rotation.classes:
+            bpy.utils.register_class(cls)
     
     # UI
-    for cls in ui_panel.classes:
-        bpy.utils.register_class(cls)
+    if ui_panel:
+        for cls in ui_panel.classes:
+            bpy.utils.register_class(cls)
     
-    for cls in ui_pie_menus.classes:
-        bpy.utils.register_class(cls)
+    if ui_pie_menus:
+        for cls in ui_pie_menus.classes:
+            bpy.utils.register_class(cls)
     
     # Keymaps
-    keymap.register_keymaps()
+    if keymap:
+        keymap.register_keymaps()
     
     print("[CANOPY] ✅ Snap Circle v2.0 activé")
     print("[CANOPY]    • Panneau: Sidebar N > CANOPY > Snap Circle")
@@ -102,44 +188,52 @@ def unregister():
     print("[CANOPY] Snap Circle: Désenregistrement...")
     
     # Nettoyer le draw handler
-    renderer.unregister_draw_handler()
+    if renderer:
+        renderer.unregister_draw_handler()
     
     # Keymaps
-    keymap.unregister_keymaps()
+    if keymap:
+        keymap.unregister_keymaps()
     
     # UI
-    for cls in reversed(ui_pie_menus.classes):
-        try:
-            bpy.utils.unregister_class(cls)
-        except:
-            pass
+    if ui_pie_menus:
+        for cls in reversed(ui_pie_menus.classes):
+            try:
+                bpy.utils.unregister_class(cls)
+            except:
+                pass
     
-    for cls in reversed(ui_panel.classes):
-        try:
-            bpy.utils.unregister_class(cls)
-        except:
-            pass
+    if ui_panel:
+        for cls in reversed(ui_panel.classes):
+            try:
+                bpy.utils.unregister_class(cls)
+            except:
+                pass
     
     # Opérateurs
-    for cls in reversed(rotation.classes):
-        try:
-            bpy.utils.unregister_class(cls)
-        except:
-            pass
+    if rotation:
+        for cls in reversed(rotation.classes):
+            try:
+                bpy.utils.unregister_class(cls)
+            except:
+                pass
     
-    for cls in reversed(movement.classes):
-        try:
-            bpy.utils.unregister_class(cls)
-        except:
-            pass
+    if movement:
+        for cls in reversed(movement.classes):
+            try:
+                bpy.utils.unregister_class(cls)
+            except:
+                pass
     
-    for cls in reversed(operators.classes):
-        try:
-            bpy.utils.unregister_class(cls)
-        except:
-            pass
+    if operators:
+        for cls in reversed(operators.classes):
+            try:
+                bpy.utils.unregister_class(cls)
+            except:
+                pass
     
     # Propriétés
-    properties.unregister_properties()
+    if properties:
+        properties.unregister_properties()
     
     print("[CANOPY] Snap Circle désactivé")

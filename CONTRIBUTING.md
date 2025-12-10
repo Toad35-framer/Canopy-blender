@@ -60,6 +60,22 @@ class MaClasse:
 
 ### Conventions de nommage
 
+#### 📁 Nommage des fichiers (IMPORTANT)
+
+**Tous les fichiers (sauf `__init__.py`) suivent le format:**
+```
+module-fichier.extension
+```
+
+**Exemples:**
+- `core-state.py` (pas `state.py`)
+- `snap_circle-operators.py` (pas `operators.py`)
+- `math_utils-fr.lang` (pas `fr.lang`)
+
+**Voir `docs/CONVENTION_NOMMAGE.md` pour les détails complets.**
+
+#### Code Python
+
 - **Classes Blender**: `CANOPY_OT_nom_operateur`, `CANOPY_PT_nom_panel`
 - **Fonctions**: `snake_case`
 - **Constantes**: `UPPER_SNAKE_CASE`
