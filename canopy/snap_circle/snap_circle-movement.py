@@ -9,8 +9,58 @@ from bpy.types import Operator
 from bpy.props import EnumProperty, IntProperty, FloatProperty
 from mathutils import Vector
 
-# Imports CANOPY
-from canopy.core import canopy_state, redraw_viewport
+# Imports CANOPY avec fallback
+try:
+    from canopy.core import canopy_state, redraw_viewport
+except ImportError:
+    import sys
+    from pathlib import Path
+    _CURRENT_DIR = Path(__file__).parent.resolve()
+    def _get_parent():
+        for name, module in sys.modules.items():
+            if hasattr(module, '__file__') and module.__file__:
+                if Path(module.__file__).resolve() == _CURRENT_DIR / "__init__.py":
+                    return module
+        return None
+    _parent = _get_parent()
+    if _parent:
+        canopy_state = _parent.canopy_state
+        redraw_viewport = _parent.redraw_viewport
+    else:
+        raise ImportError("Impossible de trouver le module parent")
+
+# Import dynamique pour les animations
+import importlib.util
+import sys
+from pathlib import Path
+
+_CURRENT_DIR = Path(__file__).parent.resolve()
+
+def _import_sibling(file_name):
+    """Importe un fichier frère avec tiret dans le nom"""
+    safe_name = file_name.replace('-', '_')
+    full_module_name = f"canopy_snap_circle_{safe_name}_movement"
+    
+    file_path = _CURRENT_DIR / f"{file_name}.py"
+    
+    if not file_path.exists():
+        return None
+    
+    try:
+        spec = importlib.util.spec_from_file_location(full_module_name, str(file_path))
+        if spec is None or spec.loader is None:
+            return None
+        
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[full_module_name] = module
+        spec.loader.exec_module(module)
+        return module
+    except Exception as e:
+        print(f"[Snap Circle] Erreur import {file_name}: {e}")
+        return None
+
+# Import optionnel des animations
+_animations = _import_sibling('snap_circle-animations')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -122,6 +172,16 @@ class CANOPY_OT_swap_positions(Operator):
     
     def execute(self, context):
         state = canopy_state.snap_circle
+        
+        # Animation de swap avec évitement
+        if _animations:
+            try:
+                _animations.create_swap_animations(
+                    state.primary_location.copy(),
+                    state.secondary_location.copy()
+                )
+            except:
+                pass
         
         # Calculer les offsets
         offset_primary = state.primary_object.location - state.primary_location

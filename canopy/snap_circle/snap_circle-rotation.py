@@ -17,18 +17,29 @@ import importlib.util
 import sys
 from pathlib import Path
 
+# Chemin absolu du dossier courant
+_CURRENT_DIR = Path(__file__).parent.resolve()
+
 def _import_sibling(file_name):
-    """Importe un fichier frère avec tiret dans le nom"""
-    current_dir = Path(__file__).parent
-    file_path = current_dir / f"{file_name}.py"
-    module_name = f"canopy.snap_circle.{file_name.replace('-', '_')}"
+    """Importe un fichier frère avec tiret dans le nom (robuste à la casse)"""
+    safe_name = file_name.replace('-', '_')
+    full_module_name = f"canopy_snap_circle_{safe_name}"
     
-    if module_name in sys.modules:
-        return sys.modules[module_name]
+    file_path = _CURRENT_DIR / f"{file_name}.py"
     
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if not file_path.exists():
+        raise ImportError(f"Fichier non trouvé: {file_path}")
+    
+    # TOUJOURS supprimer l'ancien module pour éviter les problèmes
+    if full_module_name in sys.modules:
+        del sys.modules[full_module_name]
+    
+    spec = importlib.util.spec_from_file_location(full_module_name, str(file_path))
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Impossible de créer spec pour: {file_path}")
+    
     module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
+    sys.modules[full_module_name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -40,19 +51,25 @@ get_edge_direction_from_position = _core.get_edge_direction_from_position
 # FONCTIONS UTILITAIRES
 # ══════════════════════════════════════════════════════════════════════════════
 
-def calculate_angle_between_points(pivot, point1, point2):
-    """Calcule l'angle entre deux points par rapport à un pivot"""
+def calculate_angle_between_points(pivot, point1, point2, reference_axis=None):
+    """Calcule l'angle entre deux points par rapport à un pivot
+    
+    Args:
+        pivot: Point de pivot (curseur)
+        point1: Point de départ
+        point2: Point d'arrivée
+        reference_axis: Axe de référence pour déterminer le signe (optionnel)
+    
+    Returns:
+        Angle en radians (toujours positif, le sens est donné par l'axe)
+    """
     vec1 = (point1 - pivot).normalized()
     vec2 = (point2 - pivot).normalized()
     
     dot = max(-1.0, min(1.0, vec1.dot(vec2)))
     angle = math.acos(dot)
     
-    # Déterminer le signe (sens horaire/anti-horaire)
-    cross = vec1.cross(vec2)
-    if cross.z < 0:
-        angle = -angle
-    
+    # L'angle est toujours positif - le sens de rotation est déterminé par l'axe
     return angle
 
 
@@ -301,16 +318,27 @@ class CANOPY_OT_make_edges_parallel_primary(Operator):
     
     @classmethod
     def poll(cls, context):
+        # Poll minimal pour que le bouton s'affiche toujours (grisé si conditions non remplies)
         state = canopy_state.snap_circle
-        return (state.primary_location is not None and 
-                state.secondary_location is not None and
-                state.is_object_valid(state.primary_object) and
-                state.is_object_valid(state.secondary_object) and
-                state.primary_element_type == 'EDGE' and
-                state.secondary_element_type == 'EDGE')
+        return state.is_active
     
     def execute(self, context):
         state = canopy_state.snap_circle
+        
+        # Vérifications complètes dans execute
+        if not (state.primary_location and state.secondary_location):
+            self.report({'WARNING'}, "Placez les deux cercles")
+            return {'CANCELLED'}
+        
+        if not (state.is_object_valid(state.primary_object) and 
+                state.is_object_valid(state.secondary_object)):
+            self.report({'WARNING'}, "Objets invalides")
+            return {'CANCELLED'}
+        
+        if not (state.primary_element_type == 'EDGE' and 
+                state.secondary_element_type == 'EDGE'):
+            self.report({'WARNING'}, "Les deux cercles doivent être sur des arêtes")
+            return {'CANCELLED'}
         
         # Obtenir les directions des arêtes
         edge1_dir = get_edge_direction_from_position(state.primary_location, state.primary_object)
@@ -352,16 +380,27 @@ class CANOPY_OT_make_edges_parallel_secondary(Operator):
     
     @classmethod
     def poll(cls, context):
+        # Poll minimal pour que le bouton s'affiche toujours (grisé si conditions non remplies)
         state = canopy_state.snap_circle
-        return (state.primary_location is not None and 
-                state.secondary_location is not None and
-                state.is_object_valid(state.primary_object) and
-                state.is_object_valid(state.secondary_object) and
-                state.primary_element_type == 'EDGE' and
-                state.secondary_element_type == 'EDGE')
+        return state.is_active
     
     def execute(self, context):
         state = canopy_state.snap_circle
+        
+        # Vérifications complètes dans execute
+        if not (state.primary_location and state.secondary_location):
+            self.report({'WARNING'}, "Placez les deux cercles")
+            return {'CANCELLED'}
+        
+        if not (state.is_object_valid(state.primary_object) and 
+                state.is_object_valid(state.secondary_object)):
+            self.report({'WARNING'}, "Objets invalides")
+            return {'CANCELLED'}
+        
+        if not (state.primary_element_type == 'EDGE' and 
+                state.secondary_element_type == 'EDGE'):
+            self.report({'WARNING'}, "Les deux cercles doivent être sur des arêtes")
+            return {'CANCELLED'}
         
         edge1_dir = get_edge_direction_from_position(state.secondary_location, state.secondary_object)
         edge2_dir = get_edge_direction_from_position(state.primary_location, state.primary_object)

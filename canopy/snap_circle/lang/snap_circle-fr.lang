@@ -1,0 +1,266 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# CANOPY V2 - Snap Circle - Traductions Françaises
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════════════════════
+# INTERFACE PRINCIPALE
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Boutons système
+UI_START = "🔴 DÉMARRER"
+UI_STOP = "🟢 ARRÊTER"
+UI_RESET = "Reset"
+UI_SYSTEM_INACTIVE = "Système inactif"
+UI_SYSTEM_ACTIVE = "Système actif"
+UI_RESTART_BLENDER = "❌ Redémarrez Blender!"
+UI_START_SYSTEM_FIRST = "Démarrez le système pour utiliser Snap Circle"
+UI_START_SNAP_CIRCLE_FIRST = "Démarrez Snap Circle d'abord"
+
+# Instructions
+UI_USAGE = "UTILISATION:"
+UI_CLICK_TO_PLACE = "• Clic gauche: placer cercle"
+UI_SHORTCUT_PIE = "• Ctrl+Shift+S: menu radial"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTIONS DU PANNEAU
+# ══════════════════════════════════════════════════════════════════════════════
+
+SECTION_DETECTION = "DÉTECTION:"
+SECTION_APPEARANCE = "APPARENCE:"
+SECTION_DISTANCE = "DISTANCE:"
+SECTION_HISTORY = "HISTORIQUE:"
+SECTION_MOVEMENT = "DÉPLACEMENT DIRECT:"
+SECTION_SELECTION = "SÉLECTION:"
+SECTION_ALIGNMENT = "ALIGNEMENT:"
+SECTION_DISTRIBUTION = "DISTRIBUTION:"
+SECTION_ANGULAR = "SECTEUR ANGULAIRE:"
+SECTION_PARALLEL_EDGES = "ARÊTES PARALLÈLES:"
+SECTION_FREE_ROTATION = "ROTATION LIBRE:"
+SECTION_ORIENTATION = "ORIENTATION:"
+SECTION_CURSOR = "CURSEUR:"
+SECTION_ORIGIN = "ORIGINE:"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CERCLES
+# ══════════════════════════════════════════════════════════════════════════════
+
+CIRCLE_PRIMARY = "Principal"
+CIRCLE_SECONDARY = "Secondaire"
+CIRCLE_PRIMARY_LABEL = "CERCLE PRINCIPAL:"
+CIRCLE_SECONDARY_LABEL = "CERCLE SECONDAIRE:"
+CIRCLE_NONE_PRIMARY = "Aucun cercle principal"
+CIRCLE_NONE_SECONDARY = "Aucun cercle secondaire"
+CIRCLE_NOT_DEFINED = "Non défini"
+CIRCLE_SIZE = "Taille"
+CIRCLE_OBJECT = "📦 Objet: {name}"
+CIRCLE_OBJECT_DELETED = "⚠️ Objet: [Supprimé]"
+CIRCLE_POSITION = "📍 Position:"
+CIRCLE_TOTAL_DISTANCE = "📏 Total: {distance}"
+CIRCLE_STATES = "{count} états"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# OPÉRATEURS - LABELS
+# ══════════════════════════════════════════════════════════════════════════════
+
+OP_START_SNAP_CIRCLE = "Démarrer Snap Circle"
+OP_STOP_SNAP_CIRCLE = "Arrêter Snap Circle"
+OP_RESET_SNAP_CIRCLE = "Reset Snap Circle"
+OP_HISTORY_BACK = "Historique Arrière"
+OP_HISTORY_FORWARD = "Historique Avant"
+
+OP_MOVE_PRIMARY_TO_SECONDARY = "Déplacer Principal → Secondaire"
+OP_MOVE_SECONDARY_TO_PRIMARY = "Déplacer Secondaire → Principal"
+OP_SWAP_POSITIONS = "Inverser Positions"
+OP_MOVE_BY_OFFSET = "Déplacer par Offset"
+OP_SNAP_SELECTION_TO_PRIMARY = "Sélection → Cercle Principal"
+
+OP_ALIGN_TO_AXIS = "Aligner sur Axe"
+OP_DISTRIBUTE_LINEAR = "Distribution Linéaire"
+OP_DISTRIBUTE_CIRCULAR = "Distribution Circulaire"
+OP_DISTRIBUTE_GRID = "Distribution Grille"
+
+OP_ROTATE_PRIMARY_TO_SECONDARY = "Rotation Principal → Secondaire"
+OP_ROTATE_SECONDARY_TO_PRIMARY = "Rotation Secondaire → Principal"
+OP_ROTATE_BY_ANGLE = "Rotation par Angle"
+OP_ROTATE_AROUND_CIRCLE = "Rotation autour du Cercle"
+OP_MAKE_PARALLEL_PRIMARY = "Principal → Parallèle"
+OP_MAKE_PARALLEL_SECONDARY = "Secondaire → Parallèle"
+OP_ORIENT_TO_CIRCLE = "Orienter vers Cercle"
+
+OP_CURSOR_TO_PRIMARY = "Curseur → Cercle Principal"
+OP_CURSOR_TO_SECONDARY = "Curseur → Cercle Secondaire"
+OP_ORIGIN_TO_PRIMARY = "Origine → Cercle Principal"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# OPÉRATEURS - DESCRIPTIONS
+# ══════════════════════════════════════════════════════════════════════════════
+
+DESC_START_SNAP_CIRCLE = "Active le système de cercle de référence"
+DESC_STOP_SNAP_CIRCLE = "Désactive le système de cercle de référence"
+DESC_RESET_SNAP_CIRCLE = "Remet à zéro tous les cercles"
+DESC_HISTORY_BACK = "Revient à la position précédente des cercles"
+DESC_HISTORY_FORWARD = "Avance à la position suivante des cercles"
+
+DESC_MOVE_PRIMARY_TO_SECONDARY = "Déplace l'objet du cercle principal vers la position du cercle secondaire"
+DESC_MOVE_SECONDARY_TO_PRIMARY = "Déplace l'objet du cercle secondaire vers la position du cercle principal"
+DESC_SWAP_POSITIONS = "Inverse les objets : celui du cercle principal va au cercle secondaire et vice-versa"
+DESC_MOVE_BY_OFFSET = "Déplace la sélection de la distance et direction entre les deux cercles"
+DESC_SNAP_SELECTION_TO_PRIMARY = "Déplace le centre de gravité de la sélection sur le cercle principal"
+
+DESC_ALIGN_TO_AXIS = "Aligne les objets sélectionnés sur l'axe spécifié passant par le cercle principal"
+DESC_DISTRIBUTE_LINEAR = "Distribue les objets sélectionnés linéairement entre les deux cercles"
+DESC_DISTRIBUTE_CIRCULAR = "Distribue les objets en cercle autour du cercle principal"
+DESC_DISTRIBUTE_GRID = "Distribue les objets en grille à partir du cercle principal"
+
+DESC_ROTATE_PRIMARY_TO_SECONDARY = "Fait tourner l'objet du cercle principal vers le secondaire autour du curseur 3D"
+DESC_ROTATE_SECONDARY_TO_PRIMARY = "Fait tourner l'objet du cercle secondaire vers le principal autour du curseur 3D"
+DESC_ROTATE_BY_ANGLE = "Fait tourner la sélection d'un angle défini autour du cercle principal"
+DESC_ROTATE_AROUND_CIRCLE = "Fait tourner la sélection autour du cercle choisi"
+DESC_MAKE_PARALLEL_PRIMARY = "Fait tourner l'objet principal pour que son arête soit parallèle à celle du secondaire"
+DESC_MAKE_PARALLEL_SECONDARY = "Fait tourner l'objet secondaire pour que son arête soit parallèle à celle du principal"
+DESC_ORIENT_TO_CIRCLE = "Oriente les objets sélectionnés pour pointer vers le cercle principal"
+
+DESC_CURSOR_TO_PRIMARY = "Place le curseur 3D sur le cercle de référence principal"
+DESC_CURSOR_TO_SECONDARY = "Place le curseur 3D sur le cercle de référence secondaire"
+DESC_ORIGIN_TO_PRIMARY = "Définit l'origine des objets sélectionnés sur le cercle principal"
+DESC_CLICK_HANDLER = "Gère les clics pour placer les cercles de référence"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MESSAGES - INFO
+# ══════════════════════════════════════════════════════════════════════════════
+
+MSG_SNAP_CIRCLE_STARTED = "Snap Circle activé - Cliquez sur les éléments pour placer les cercles"
+MSG_SNAP_CIRCLE_STOPPED = "Snap Circle arrêté"
+MSG_CIRCLES_RESET = "Cercles remis à zéro"
+MSG_CURSOR_TO_PRIMARY = "Curseur placé sur le cercle principal"
+MSG_CURSOR_TO_SECONDARY = "Curseur placé sur le cercle secondaire"
+MSG_OBJECTS_SWAPPED = "Objets inversés"
+MSG_EDGES_ALREADY_PARALLEL = "Arêtes déjà parallèles"
+MSG_HISTORY_BACK = "Retour historique ({index}/{total})"
+MSG_HISTORY_FORWARD = "Avance historique ({index}/{total})"
+
+MSG_OBJECT_MOVED_TO_SECONDARY = "'{name}' déplacé vers le cercle secondaire"
+MSG_OBJECT_MOVED_TO_PRIMARY = "'{name}' déplacé vers le cercle principal"
+MSG_OBJECTS_MOVED = "{count} objet(s) déplacé(s)"
+MSG_OBJECTS_MOVED_BY_OFFSET = "{count} objet(s) déplacé(s) de {distance}"
+MSG_OBJECTS_ALIGNED = "{count} objet(s) aligné(s) sur {axis}"
+MSG_OBJECTS_DISTRIBUTED = "{count} objets distribués"
+MSG_OBJECTS_DISTRIBUTED_CIRCULAR = "{count} objets distribués en cercle"
+MSG_OBJECTS_DISTRIBUTED_GRID = "{count} objets distribués en grille"
+MSG_ROTATION_DONE = "Rotation de {angle}°"
+MSG_OBJECTS_ROTATED = "{count} objet(s) tourné(s)"
+MSG_OBJECTS_ROTATED_BY_ANGLE = "{count} objet(s) tourné(s) de {angle}°"
+MSG_OBJECTS_ORIENTED = "{count} objet(s) orienté(s)"
+MSG_EDGE_ALIGNED = "Arête alignée (rotation {angle}°)"
+MSG_ORIGIN_SET = "Origine définie pour {count} objet(s)"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MESSAGES - WARNINGS
+# ══════════════════════════════════════════════════════════════════════════════
+
+MSG_SYSTEM_ALREADY_ACTIVE = "Système déjà actif"
+MSG_PLACE_TWO_CIRCLES = "Placez les deux cercles"
+MSG_INVALID_OBJECTS = "Objets invalides"
+MSG_EDGES_REQUIRED = "Les deux cercles doivent être sur des arêtes"
+MSG_NO_MESH_SELECTED = "Aucun mesh sélectionné"
+MSG_MIN_TWO_MESHES = "Au moins 2 meshes requis"
+MSG_CIRCLE_NOT_DEFINED = "Cercle {type} non défini"
+MSG_NO_PREVIOUS_STATE = "Aucun état précédent"
+MSG_NO_NEXT_STATE = "Aucun état suivant"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# HINTS ET INSTRUCTIONS
+# ══════════════════════════════════════════════════════════════════════════════
+
+HINT_PLACE_TWO_CIRCLES = "→ Placez 2 cercles"
+HINT_SELECT_TWO_OBJECTS = "→ Sélectionnez 2+ objets"
+HINT_EDGES_REQUIRED = "→ Cercles sur arêtes requis"
+HINT_CIRCLES_ON_EDGE_MIDPOINTS = "Cercles sur milieux d'arêtes"
+HINT_ROTATION_IN_PLACE = "Rotation sur place"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MENUS RADIAUX
+# ══════════════════════════════════════════════════════════════════════════════
+
+PIE_SYSTEM = "Système"
+PIE_MOVEMENT = "Déplacement"
+PIE_ROTATION = "Rotation"
+PIE_UTILITIES = "Utilitaires"
+PIE_ALIGNMENT = "Alignement"
+PIE_DISTRIBUTION = "Distribution"
+PIE_PARALLEL_EDGES = "Arêtes Parallèles"
+
+PIE_PRIMARY_TO_SECONDARY = "Principal → Secondaire"
+PIE_SECONDARY_TO_PRIMARY = "Secondaire → Principal"
+PIE_SELECTION_TO_PRIMARY = "Sélection → Principal"
+PIE_SWAP = "Inverser"
+PIE_BY_OFFSET = "Par Offset"
+PIE_BY_ANGLE = "Par Angle"
+PIE_AROUND_CIRCLE = "Autour Cercle"
+PIE_CURSOR_TO_PRIMARY = "Curseur → Principal"
+PIE_CURSOR_TO_SECONDARY = "Curseur → Secondaire"
+PIE_ORIGIN_TO_PRIMARY = "Origine → Principal"
+PIE_ORIENT = "Orienter"
+PIE_LINEAR = "Linéaire"
+PIE_CIRCULAR = "Circulaire"
+PIE_GRID = "Grille"
+PIE_ALIGN_X = "Aligner X"
+PIE_ALIGN_Y = "Aligner Y"
+PIE_ALIGN_Z = "Aligner Z"
+PIE_START = "Démarrer"
+PIE_STOP = "Arrêter"
+PIE_HISTORY_BACK = "← Historique"
+PIE_HISTORY_FORWARD = "Historique →"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PROPRIÉTÉS
+# ══════════════════════════════════════════════════════════════════════════════
+
+PROP_DETECTION_MODE = "Mode de détection"
+PROP_DETECTION_MODE_DESC = "Type d'éléments à détecter"
+PROP_DETECTION_THRESHOLD = "Seuil de détection"
+PROP_DETECTION_THRESHOLD_DESC = "Distance maximale de détection en pixels"
+
+PROP_SHOW_CIRCLE = "Afficher cercle principal"
+PROP_SHOW_SECONDARY = "Afficher cercle secondaire"
+PROP_CIRCLE_SIZE = "Taille du cercle"
+PROP_CIRCLE_COLOR = "Couleur du cercle"
+PROP_SECONDARY_SIZE = "Taille cercle secondaire"
+PROP_SECONDARY_COLOR = "Couleur cercle secondaire"
+
+PROP_ANGLE = "Angle (degrés)"
+PROP_AXIS = "Axe"
+PROP_AXIS_X = "Rotation autour de X"
+PROP_AXIS_Y = "Rotation autour de Y"
+PROP_AXIS_Z = "Rotation autour de Z"
+PROP_CIRCLE_TYPE = "Cercle"
+PROP_CIRCLE_TYPE_PRIMARY = "Autour du cercle principal"
+PROP_CIRCLE_TYPE_SECONDARY = "Autour du cercle secondaire"
+
+PROP_COLUMNS = "Colonnes"
+PROP_SPACING = "Espacement"
+PROP_RADIUS = "Rayon"
+PROP_START_ANGLE = "Angle de départ"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TYPES D'ÉLÉMENTS
+# ══════════════════════════════════════════════════════════════════════════════
+
+ELEMENT_VERTEX = "Sommet"
+ELEMENT_EDGE = "Arête"
+ELEMENT_FACE = "Face"
+ELEMENT_OBJECT = "Objet"
+ELEMENT_UNKNOWN = "Inconnu"
+
+DETECTION_ALL = "Tout"
+DETECTION_VERTEX = "Sommets uniquement"
+DETECTION_EDGE = "Arêtes uniquement"
+DETECTION_FACE = "Faces uniquement"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ANIMATIONS
+# ══════════════════════════════════════════════════════════════════════════════
+
+SECTION_ANIMATIONS = "Animations"
+PROP_SHOW_ANIMATIONS = "Activer les animations"
+PROP_ANIMATION_COLOR = "Couleur des animations"

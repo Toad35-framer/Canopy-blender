@@ -14,18 +14,29 @@ import importlib.util
 import sys
 from pathlib import Path
 
+# Chemin absolu du dossier courant
+_CURRENT_DIR = Path(__file__).parent.resolve()
+
 def _import_sibling(file_name):
-    """Importe un fichier frère avec tiret dans le nom"""
-    current_dir = Path(__file__).parent
-    file_path = current_dir / f"{file_name}.py"
-    module_name = f"canopy.snap_circle.{file_name.replace('-', '_')}"
+    """Importe un fichier frère avec tiret dans le nom (robuste à la casse)"""
+    safe_name = file_name.replace('-', '_')
+    full_module_name = f"canopy_snap_circle_{safe_name}"
     
-    if module_name in sys.modules:
-        return sys.modules[module_name]
+    file_path = _CURRENT_DIR / f"{file_name}.py"
     
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if not file_path.exists():
+        raise ImportError(f"Fichier non trouvé: {file_path}")
+    
+    # TOUJOURS supprimer l'ancien module pour éviter les problèmes
+    if full_module_name in sys.modules:
+        del sys.modules[full_module_name]
+    
+    spec = importlib.util.spec_from_file_location(full_module_name, str(file_path))
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Impossible de créer spec pour: {file_path}")
+    
     module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
+    sys.modules[full_module_name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -128,6 +139,17 @@ class CANOPY_PT_snap_circle_main(Panel):
             row = box.row(align=True)
             row.prop(props, "secondary_circle_size", text="Taille")
             row.prop(props, "secondary_circle_color", text="")
+        
+        # ══════════════════════════════════════════════════════════════════════
+        # Animations
+        # ══════════════════════════════════════════════════════════════════════
+        box = layout.box()
+        box.label(text="ANIMATIONS:", icon='ANIM')
+        row = box.row()
+        row.prop(props, "show_animations", text="Activer les animations")
+        if props.show_animations:
+            row = box.row()
+            row.prop(props, "animation_color", text="Couleur")
     
     def _draw_circle_info(self, layout, name, is_primary):
         """Affiche les informations d'un cercle"""
@@ -214,54 +236,92 @@ class CANOPY_PT_snap_circle_movement(Panel):
     
     @classmethod
     def poll(cls, context):
-        return canopy_state.snap_circle.is_active
+        # Toujours visible quand le panneau parent existe
+        return True
     
     def draw(self, context):
         layout = self.layout
         state = canopy_state.snap_circle
         
+        # Message si système inactif
+        if not state.is_active:
+            layout.label(text="⚠️ Système inactif", icon='ERROR')
+            layout.label(text="Démarrez Snap Circle d'abord")
+            return
+        
+        # Vérifier si les animations sont activées (pour les boutons "?")
+        props = context.scene.snap_circle_props if hasattr(context.scene, 'snap_circle_props') else None
+        show_anim = props.show_animations if props else False
+        
         # Déplacement direct
-        if state.primary_location and state.secondary_location:
-            box = layout.box()
-            box.label(text="DÉPLACEMENT DIRECT:", icon='TRANSFORM_MOVE')
-            col = box.column(align=True)
-            col.operator("canopy.move_primary_to_secondary")
-            col.operator("canopy.move_secondary_to_primary")
-            col.operator("canopy.swap_positions")
+        box = layout.box()
+        box.label(text="DÉPLACEMENT DIRECT:", icon='EMPTY_ARROWS')
+        
+        # Activer/désactiver selon les conditions
+        has_both = (state.primary_location is not None) and (state.secondary_location is not None)
+        
+        # Bouton Principal → Secondaire
+        row = box.row(align=True)
+        row.enabled = has_both
+        row.operator("canopy.move_primary_to_secondary")
+        if show_anim:
+            row.operator("canopy.preview_move_p_to_s", text="", icon='QUESTION')
+        
+        # Bouton Secondaire → Principal
+        row = box.row(align=True)
+        row.enabled = has_both
+        row.operator("canopy.move_secondary_to_primary")
+        if show_anim:
+            row.operator("canopy.preview_move_s_to_p", text="", icon='QUESTION')
+        
+        # Bouton Inverser (pas de "?" - c'est évident)
+        row = box.row(align=True)
+        row.enabled = has_both
+        row.operator("canopy.swap_positions")
+        
+        if not has_both:
+            box.label(text="→ Placez 2 cercles", icon='INFO')
         
         # Sélection
-        if state.primary_location:
-            box = layout.box()
-            box.label(text="SÉLECTION:", icon='RESTRICT_SELECT_OFF')
-            box.operator("canopy.snap_selection_to_primary")
-            
-            if state.secondary_location:
-                box.operator("canopy.move_by_offset")
+        box = layout.box()
+        box.label(text="SÉLECTION:", icon='RESTRICT_SELECT_OFF')
+        col = box.column(align=True)
+        col.enabled = state.primary_location is not None
+        col.operator("canopy.snap_selection_to_primary")
+        
+        col = box.column(align=True)
+        col.enabled = has_both
+        col.operator("canopy.move_by_offset")
         
         # Alignement
-        if state.primary_location and len(context.selected_objects) > 1:
-            box = layout.box()
-            box.label(text="ALIGNEMENT:", icon='ALIGN_JUSTIFY')
-            
-            row = box.row(align=True)
-            op = row.operator("canopy.align_to_axis", text="X")
-            op.axis = 'X'
-            op = row.operator("canopy.align_to_axis", text="Y")
-            op.axis = 'Y'
-            op = row.operator("canopy.align_to_axis", text="Z")
-            op.axis = 'Z'
+        box = layout.box()
+        box.label(text="ALIGNEMENT:", icon='ALIGN_JUSTIFY')
+        
+        has_selection = len(context.selected_objects) > 1
+        row = box.row(align=True)
+        row.enabled = state.primary_location is not None and has_selection
+        op = row.operator("canopy.align_to_axis", text="X")
+        op.axis = 'X'
+        op = row.operator("canopy.align_to_axis", text="Y")
+        op.axis = 'Y'
+        op = row.operator("canopy.align_to_axis", text="Z")
+        op.axis = 'Z'
+        
+        if not has_selection:
+            box.label(text="→ Sélectionnez 2+ objets", icon='INFO')
         
         # Distribution
-        if state.primary_location and len(context.selected_objects) > 1:
-            box = layout.box()
-            box.label(text="DISTRIBUTION:", icon='SNAP_GRID')
-            col = box.column(align=True)
-            
-            if state.secondary_location:
-                col.operator("canopy.distribute_linear")
-            
-            col.operator("canopy.distribute_circular")
-            col.operator("canopy.distribute_grid")
+        box = layout.box()
+        box.label(text="DISTRIBUTION:", icon='SNAP_GRID')
+        col = box.column(align=True)
+        col.enabled = state.primary_location is not None and has_selection
+        
+        sub = col.column(align=True)
+        sub.enabled = has_both and has_selection
+        sub.operator("canopy.distribute_linear")
+        
+        col.operator("canopy.distribute_circular")
+        col.operator("canopy.distribute_grid")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -280,49 +340,85 @@ class CANOPY_PT_snap_circle_rotation(Panel):
     
     @classmethod
     def poll(cls, context):
-        return canopy_state.snap_circle.is_active
+        # Toujours visible
+        return True
     
     def draw(self, context):
         layout = self.layout
         state = canopy_state.snap_circle
         
+        # Message si système inactif
+        if not state.is_active:
+            layout.label(text="⚠️ Système inactif", icon='ERROR')
+            return
+        
+        # Vérifier si les animations sont activées
+        props = context.scene.snap_circle_props if hasattr(context.scene, 'snap_circle_props') else None
+        show_anim = props.show_animations if props else False
+        
+        has_both = (state.primary_location is not None) and (state.secondary_location is not None)
+        
         # Rotations principales
-        if state.primary_location and state.secondary_location:
-            box = layout.box()
-            box.label(text="SECTEUR ANGULAIRE:", icon='DRIVER_ROTATIONAL_DIFFERENCE')
-            
-            col = box.column(align=True)
-            if state.is_object_valid(state.primary_object):
-                col.operator("canopy.rotate_primary_to_secondary")
-            if state.is_object_valid(state.secondary_object):
-                col.operator("canopy.rotate_secondary_to_primary")
+        box = layout.box()
+        box.label(text="SECTEUR ANGULAIRE:", icon='DRIVER_ROTATIONAL_DIFFERENCE')
+        
+        # Rotation Principal → Secondaire
+        row = box.row(align=True)
+        row.enabled = has_both and state.is_object_valid(state.primary_object)
+        row.operator("canopy.rotate_primary_to_secondary")
+        if show_anim:
+            row.operator("canopy.preview_rotate_p_to_s", text="", icon='QUESTION')
+        
+        # Rotation Secondaire → Principal
+        row = box.row(align=True)
+        row.enabled = has_both and state.is_object_valid(state.secondary_object)
+        row.operator("canopy.rotate_secondary_to_primary")
+        if show_anim:
+            row.operator("canopy.preview_rotate_s_to_p", text="", icon='QUESTION')
+        
+        if not has_both:
+            box.label(text="→ Placez 2 cercles", icon='INFO')
         
         # Arêtes parallèles
-        if (state.primary_location and state.secondary_location and
-            state.is_object_valid(state.primary_object) and
-            state.is_object_valid(state.secondary_object) and
-            state.primary_element_type == 'EDGE' and
-            state.secondary_element_type == 'EDGE'):
-            
-            box = layout.box()
-            box.label(text="ARÊTES PARALLÈLES:", icon='ARROW_LEFTRIGHT')
-            col = box.column(align=True)
-            col.operator("canopy.make_edges_parallel_primary")
-            col.operator("canopy.make_edges_parallel_secondary")
+        box = layout.box()
+        box.label(text="ARÊTES PARALLÈLES:", icon='ARROW_LEFTRIGHT')
+        
+        is_edge_mode = (state.primary_element_type == 'EDGE' and 
+                       state.secondary_element_type == 'EDGE' and
+                       has_both)
+        
+        # Parallèle vers Principal
+        row = box.row(align=True)
+        row.enabled = is_edge_mode
+        row.operator("canopy.make_edges_parallel_primary")
+        if show_anim:
+            row.operator("canopy.preview_parallel_p", text="", icon='QUESTION')
+        
+        # Parallèle vers Secondaire
+        row = box.row(align=True)
+        row.enabled = is_edge_mode
+        row.operator("canopy.make_edges_parallel_secondary")
+        if show_anim:
+            row.operator("canopy.preview_parallel_s", text="", icon='QUESTION')
+        
+        if not is_edge_mode:
+            box.label(text="→ Cercles sur arêtes requis", icon='INFO')
         
         # Rotation libre
         box = layout.box()
         box.label(text="ROTATION LIBRE:", icon='CON_ROTLIKE')
         box.operator("canopy.rotate_by_angle")
         
-        if state.primary_location or state.secondary_location:
-            box.operator("canopy.rotate_around_circle")
+        col = box.column(align=True)
+        col.enabled = state.primary_location is not None or state.secondary_location is not None
+        col.operator("canopy.rotate_around_circle")
         
         # Orientation
-        if context.selected_objects:
-            box = layout.box()
-            box.label(text="ORIENTATION:", icon='ORIENTATION_NORMAL')
-            box.operator("canopy.orient_to_circle")
+        box = layout.box()
+        box.label(text="ORIENTATION:", icon='ORIENTATION_NORMAL')
+        col = box.column(align=True)
+        col.enabled = bool(context.selected_objects)
+        col.operator("canopy.orient_to_circle")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -341,11 +437,17 @@ class CANOPY_PT_snap_circle_utilities(Panel):
     
     @classmethod
     def poll(cls, context):
-        return canopy_state.snap_circle.is_active
+        # Toujours visible
+        return True
     
     def draw(self, context):
         layout = self.layout
         state = canopy_state.snap_circle
+        
+        # Message si système inactif
+        if not state.is_active:
+            layout.label(text="⚠️ Système inactif", icon='ERROR')
+            return
         
         box = layout.box()
         box.label(text="CURSEUR:", icon='PIVOT_CURSOR')

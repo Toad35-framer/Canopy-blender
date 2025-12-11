@@ -93,6 +93,25 @@ class SnapCircleProperties(PropertyGroup):
         description="Afficher ou masquer le cercle secondaire",
         default=True
     )
+    
+    # ══════════════════════════════════════════════════════════════════════════
+    # Animations
+    # ══════════════════════════════════════════════════════════════════════════
+    show_animations: BoolProperty(
+        name="Animations",
+        description="Activer les animations pédagogiques",
+        default=True
+    )
+    
+    animation_color: FloatVectorProperty(
+        name="Couleur animations",
+        description="Couleur des animations et prévisualisations",
+        default=(0.75, 0.75, 0.75, 0.9),
+        size=4,
+        subtype='COLOR',
+        min=0.0,
+        max=1.0
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
